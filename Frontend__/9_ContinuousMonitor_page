@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SATYAM — Continuous Monitoring</title>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">🛡</div>
+
+            <div>
+                <b>SATYAM</b>
+                <small>SMART PROCUREMENT AI</small>
+            </div>
+        </div>
+
+        <nav class="nav">
+
+            <a data-page="dashboard"
+               href="02_commandcenter.html">
+                ⌂ Command Center
+            </a>
+
+            <a data-page="tenders"
+               href="03_TenderAnalysis.html">
+                ⌕ Tender Analysis
+            </a>
+
+            <a data-page="bidders"
+               href="04_Bidderverification.html">
+                ♟ Bidder Verification
+            </a>
+
+            <a data-page="documents"
+               href="05_Documentverify.html">
+                ▣ Document Verification
+            </a>
+
+            <a data-page="ai"
+               href="06_AI_compliance.html">
+                ✦ AI Compliance
+            </a>
+
+            <a data-page="risk"
+               href="07_Risk_intelligence.html">
+                ⚠ Risk Intelligence
+            </a>
+
+            <a data-page="fingerprint"
+               href="08_bidder_fingerprint.html">
+                ⌁ Bidder Fingerprint
+            </a>
+
+            <a data-page="monitor"
+               href="09_continuousmonitor.html">
+                ↻ Continuous Monitoring
+            </a>
+
+            <a data-page="reports"
+               href="10_report_trails.html">
+                ◴ Reports & Audit Trails
+            </a>
+
+        </nav>
+
+        <button
+            class="btn btn-outline"
+            style="position:absolute;bottom:20px;left:14px;right:14px"
+            onclick="logout()">
+
+            Logout
+
+        </button>
+
+    </aside>
+
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+
+            <h1>Continuous Monitoring</h1>
+
+            <div class="user">
+
+                <div class="avatar">
+                    SO
+                </div>
+
+                Procurement Officer
+
+            </div>
+
+        </header>
+
+
+        <!-- CONTENT -->
+        <div class="content">
+
+
+            <!-- HERO -->
+            <div class="hero">
+
+                <h2>
+                    Monitoring Console
+                </h2>
+
+                <p>
+                    Real-time bidder, document and audit activity
+                    from the SATYAM backend.
+                </p>
+
+            </div>
+
+
+            <!-- METRICS -->
+            <div class="grid grid3">
+
+
+                <div class="card">
+
+                    <div class="label">
+                        REGISTERED BIDDERS
+                    </div>
+
+                    <div
+                        class="value"
+                        id="bidderCount">
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="label">
+                        DOCUMENTS
+                    </div>
+
+                    <div
+                        class="value"
+                        id="documentCount">
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="label">
+                        AUDIT EVENTS
+                    </div>
+
+                    <div
+                        class="value"
+                        id="auditCount">
+                        —
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- AUDIT EVENTS -->
+            <div
+                class="card"
+                style="margin-top:18px">
+
+
+                <div
+                    class="section-title"
+                    style="margin-top:0">
+
+                    <div>
+
+                        <h3>
+                            Latest Audit Events
+                        </h3>
+
+                        <p>
+                            Recent system activity recorded by SATYAM.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        class="btn btn-outline"
+                        onclick="loadMonitoring()">
+
+                        ↻ Refresh
+
+                    </button>
+
+                </div>
+
+
+                <div class="table-wrap">
+
+                    <table class="table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    ACTION
+                                </th>
+
+                                <th>
+                                    ENTITY
+                                </th>
+
+                                <th>
+                                    DETAILS
+                                </th>
+
+                                <th>
+                                    TIME
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="auditRows">
+
+                            <tr>
+
+                                <td
+                                    colspan="4"
+                                    class="empty">
+
+                                    Loading monitoring data...
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script src="app.js"></script>
+
+
+<script>
+
+
+    // Protect page
+    guard();
+
+    // Highlight current page
+    nav("monitor");
+
+
+    const bidderCount =
+        document.getElementById("bidderCount");
+
+    const documentCount =
+        document.getElementById("documentCount");
+
+    const auditCount =
+        document.getElementById("auditCount");
+
+    const auditRows =
+        document.getElementById("auditRows");
+
+
+    // Safe HTML display
+    function safe(value) {
+
+        if (
+            value === null ||
+            value === undefined ||
+            value === ""
+        ) {
+            return "-";
+        }
+
+        if (typeof esc === "function") {
+            return esc(String(value));
+        }
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    // Load monitoring data
+    async function loadMonitoring() {
+
+        auditRows.innerHTML = `
+            <tr>
+                <td colspan="4" class="empty">
+                    Loading latest activity...
+                </td>
+            </tr>
+        `;
+
+
+        try {
+
+            const results =
+                await Promise.all([
+
+                    fetch(
+                        "http://127.0.0.1:8000/api/bidders"
+                    ),
+
+                    fetch(
+                        "http://127.0.0.1:8000/api/documents"
+                    ),
+
+                    fetch(
+                        "http://127.0.0.1:8000/api/audit"
+                    )
+
+                ]);
+
+
+            if (
+                !results[0].ok ||
+                !results[1].ok ||
+                !results[2].ok
+            ) {
+
+                throw new Error(
+                    "Unable to load monitoring data"
+                );
+
+            }
+
+
+            const bidders =
+                await results[0].json();
+
+            const documents =
+                await results[1].json();
+
+            const audits =
+                await results[2].json();
+
+
+            // Update metrics
+            bidderCount.textContent =
+                bidders.length;
+
+            documentCount.textContent =
+                documents.length;
+
+            auditCount.textContent =
+                audits.length;
+
+
+            // Latest 20 events
+            const latest =
+                audits.slice(0, 20);
+
+
+            if (!latest.length) {
+
+                auditRows.innerHTML = `
+                    <tr>
+                        <td
+                            colspan="4"
+                            class="empty">
+
+                            No audit events recorded yet.
+
+                        </td>
+                    </tr>
+                `;
+
+                return;
+            }
+
+
+            auditRows.innerHTML =
+                latest.map(event => `
+
+                    <tr>
+
+                        <td>
+                            <strong>
+                                ${safe(event.action)}
+                            </strong>
+                        </td>
+
+
+                        <td>
+
+                            ${safe(event.entity_type)}
+
+                            #${safe(event.entity_id)}
+
+                        </td>
+
+
+                        <td>
+                            ${safe(event.details)}
+                        </td>
+
+
+                        <td>
+                            ${safe(event.created_at)}
+                        </td>
+
+                    </tr>
+
+                `).join("");
+
+
+        }
+
+        catch (error) {
+
+            bidderCount.textContent = "—";
+            documentCount.textContent = "—";
+            auditCount.textContent = "—";
+
+
+            auditRows.innerHTML = `
+                <tr>
+                    <td
+                        colspan="4"
+                        class="empty">
+
+                        ${safe(error.message)}
+
+                    </td>
+                </tr>
+            `;
+
+        }
+
+    }
+
+
+    // Initial load
+    loadMonitoring();
+
+
+</script>
+
+</body>
+</html>
