@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SATYAM — AI Compliance</title>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">🛡</div>
+
+            <div>
+                <b>SATYAM</b>
+                <small>SMART PROCUREMENT AI</small>
+            </div>
+        </div>
+
+        <nav class="nav">
+
+            <a data-page="dashboard"
+               href="02_commandcenter.html">
+                ⌂ Command Center
+            </a>
+
+            <a data-page="tenders"
+               href="03_TenderAnalysis.html">
+                ⌕ Tender Analysis
+            </a>
+
+            <a data-page="bidders"
+               href="04_Bidderverification.html">
+                ♟ Bidder Verification
+            </a>
+
+            <a data-page="documents"
+               href="05_Documentverify.html">
+                ▣ Document Verification
+            </a>
+
+            <a data-page="ai"
+               href="06_AI_compliance.html">
+                ✦ AI Compliance
+            </a>
+
+            <a data-page="risk"
+               href="07_Risk_intelligence.html">
+                ⚠ Risk Intelligence
+            </a>
+
+            <a data-page="fingerprint"
+               href="08_bidder_fingerprint.html">
+                ⌁ Bidder Fingerprint
+            </a>
+
+            <a data-page="monitor"
+               href="09_continuousmonitor.html">
+                ↻ Continuous Monitoring
+            </a>
+
+            <a data-page="reports"
+               href="10_report_trails.html">
+                ◴ Reports & Audit Trails
+            </a>
+
+        </nav>
+
+        <button
+            class="btn btn-outline"
+            style="position:absolute;bottom:20px;left:14px;right:14px"
+            onclick="logout()">
+            Logout
+        </button>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+
+            <h1>AI Compliance</h1>
+
+            <div class="user">
+                <div class="avatar">SO</div>
+                Procurement Officer
+            </div>
+
+        </header>
+
+
+        <div class="content">
+
+            <!-- HERO -->
+            <div class="hero">
+
+                <h2>AI Compliance Verification</h2>
+
+                <p>
+                    Use local Qwen AI to verify whether a bidder document
+                    satisfies a tender requirement.
+                </p>
+
+            </div>
+
+
+            <!-- INPUT CARD -->
+            <div class="card">
+
+                <h3>Run AI Verification</h3>
+
+                <p>
+                    Enter the document ID and requirement ID generated
+                    by SATYAM.
+                </p>
+
+
+                <div class="form-grid">
+
+                    <div class="field">
+
+                        <label>DOCUMENT ID</label>
+
+                        <input
+                            id="doc"
+                            type="number"
+                            placeholder="Example: 4"
+                            min="1">
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>REQUIREMENT ID</label>
+
+                        <input
+                            id="req"
+                            type="number"
+                            placeholder="Example: 1"
+                            min="1">
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>&nbsp;</label>
+
+                        <button
+                            id="runButton"
+                            class="btn btn-primary"
+                            style="width:100%"
+                            onclick="runAI()">
+
+                            ✦ Run AI Compliance
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div id="message"></div>
+
+            </div>
+
+
+            <!-- RESULT -->
+            <div
+                class="card"
+                style="margin-top:18px">
+
+                <h3>AI Verification Result</h3>
+
+                <div
+                    id="result"
+                    class="empty">
+
+                    Enter the Document ID and Requirement ID,
+                    then click "Run AI Compliance".
+
+                </div>
+
+            </div>
+
+
+            <!-- HOW IT WORKS -->
+            <div
+                class="card"
+                style="margin-top:18px">
+
+                <h3>How SATYAM AI Works</h3>
+
+                <div class="grid grid3">
+
+                    <div class="notice info">
+                        <b>1. Document</b>
+                        <br>
+                        SATYAM reads the uploaded PDF and extracts
+                        its content using OCR.
+                    </div>
+
+                    <div class="notice info">
+                        <b>2. Local Qwen AI</b>
+                        <br>
+                        Qwen analyzes the extracted document against
+                        the tender requirement.
+                    </div>
+
+                    <div class="notice info">
+                        <b>3. Decision</b>
+                        <br>
+                        SATYAM returns PASS, FAIL or REVIEW with
+                        confidence and reasoning.
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script src="app.js"></script>
+
+<script>
+
+    /* Authentication */
+    guard();
+
+    /* Highlight AI Compliance in sidebar */
+    nav("ai");
+
+
+    async function runAI() {
+
+        const documentId =
+            document.getElementById("doc").value.trim();
+
+        const requirementId =
+            document.getElementById("req").value.trim();
+
+        const result =
+            document.getElementById("result");
+
+        const message =
+            document.getElementById("message");
+
+        const button =
+            document.getElementById("runButton");
+
+
+        /* Validate input */
+        if (!documentId || !requirementId) {
+
+            msg(
+                "message",
+                "Please enter both Document ID and Requirement ID.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        /* Loading state */
+        button.disabled = true;
+
+        button.textContent = "⏳ Running AI...";
+
+        result.innerHTML = `
+            <div class="notice info">
+                <b>AI analysis in progress...</b>
+                <br><br>
+                SATYAM is sending the document content
+                to the local Qwen AI model.
+                <br><br>
+                Please wait.
+            </div>
+        `;
+
+
+        try {
+
+            const response = await api(
+                `/api/ai-compliance/${documentId}/${requirementId}`
+            );
+
+
+            /* Backend error */
+            if (
+                response.status === "error" ||
+                response.compliance_status === undefined
+            ) {
+
+                throw new Error(
+                    response.message ||
+                    response.error ||
+                    "AI verification failed."
+                );
+
+            }
+
+
+            /* Convert confidence to percentage */
+            const confidence =
+                Math.round(
+                    Number(response.confidence || 0) * 100
+                );
+
+
+            /* Status */
+            const status =
+                response.compliance_status || "REVIEW";
+
+
+            /* Display result */
+            result.innerHTML = `
+
+                <div class="grid grid3">
+
+                    <div>
+
+                        <div class="label">
+                            COMPLIANCE STATUS
+                        </div>
+
+                        <div style="margin-top:8px">
+                            ${tag(status)}
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="label">
+                            AI CONFIDENCE
+                        </div>
+
+                        <div class="value">
+                            ${confidence}%
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="label">
+                            AI MODEL
+                        </div>
+
+                        <div
+                            class="value"
+                            style="font-size:18px">
+
+                            ${esc(
+                                response.ai_model ||
+                                "qwen2.5:3b"
+                            )}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="notice info"
+                    style="margin-top:18px">
+
+                    <strong>AI Reasoning</strong>
+
+                    <br><br>
+
+                    ${esc(
+                        response.reason ||
+                        "No explanation returned."
+                    )}
+
+                </div>
+
+
+                <div
+                    class="notice success"
+                    style="margin-top:12px">
+
+                    <strong>Verification ID:</strong>
+
+                    ${esc(
+                        String(
+                            response.verification_id || "-"
+                        )
+                    )}
+
+                    <br>
+
+                    <strong>Document ID:</strong>
+
+                    ${esc(String(documentId))}
+
+                    <br>
+
+                    <strong>Requirement ID:</strong>
+
+                    ${esc(String(requirementId))}
+
+                </div>
+
+            `;
+
+
+            msg(
+                "message",
+                "AI compliance verification completed successfully.",
+                "success"
+            );
+
+        }
+
+        catch (error) {
+
+            result.innerHTML = `
+
+                <div class="notice error">
+
+                    <strong>AI Verification Failed</strong>
+
+                    <br><br>
+
+                    ${esc(error.message)}
+
+                </div>
+
+            `;
+
+            msg(
+                "message",
+                "AI analysis failed.",
+                "error"
+            );
+
+        }
+
+        finally {
+
+            button.disabled = false;
+
+            button.textContent =
+                "✦ Run AI Compliance";
+
+        }
+
+    }
+
+</script>
+
+</body>
+</html>
