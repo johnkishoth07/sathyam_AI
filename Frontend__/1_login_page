@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SATYAM — Secure Login</title>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div class="login-page">
+
+    <!-- LEFT SIDE -->
+    <section class="login-left">
+
+        <div class="brand">
+            <div class="brand-icon">🛡</div>
+
+            <div>
+                <b>SATYAM</b>
+                <small>SMART AI TENDER & YIELD ASSURANCE MODULE</small>
+            </div>
+        </div>
+
+        <h1>
+            AI-Powered Compliance Verification
+            for GeM Procurement
+        </h1>
+
+        <p>
+            Automated document verification, AI compliance analysis,
+            bidder risk intelligence and transparent audit trails
+            for procurement officers.
+        </p>
+
+    </section>
+
+
+    <!-- RIGHT SIDE -->
+    <section class="login-right">
+
+        <form class="login-card" id="loginForm">
+
+            <h2>Officer Login</h2>
+
+            <div class="sub">
+                Sign in with your authorized government credentials.
+            </div>
+
+
+            <div class="field">
+
+                <label for="email">
+                    EMAIL / USERNAME
+                </label>
+
+                <input
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    autocomplete="username"
+                    required
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="password">
+                    PASSWORD
+                </label>
+
+                <input
+                    id="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                class="btn btn-primary"
+                id="loginButton"
+                type="submit"
+            >
+                ↪ Login
+            </button>
+
+
+            <div class="security">
+                <span>Authorized officers only</span>
+                <span>Secure access</span>
+            </div>
+
+
+            <div id="loginMessage"></div>
+
+        </form>
+
+    </section>
+
+</div>
+
+
+<script src="app.js"></script>
+
+<script>
+
+const loginForm = document.getElementById("loginForm");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const loginButton = document.getElementById("loginButton");
+const loginMessage = document.getElementById("loginMessage");
+
+
+loginForm.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+
+    if (!email || !password) {
+        loginMessage.innerHTML =
+            '<div class="notice error">Please enter email and password.</div>';
+        return;
+    }
+
+
+    loginButton.disabled = true;
+    loginButton.textContent = "Signing in...";
+
+    loginMessage.innerHTML = "";
+
+
+    try {
+
+        const response = await fetch("http://127.0.0.1:8000/api/login", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                email: email,
+                password: password
+            })
+
+        });
+
+
+        const data = await response.json();
+
+
+        if (!response.ok || data.status !== "success") {
+
+            throw new Error(
+                data.message || "Invalid credentials."
+            );
+
+        }
+
+
+        // Save authenticated session
+        localStorage.setItem("satyam_auth", "1");
+
+        // Save logged-in officer information
+        if (data.user) {
+            localStorage.setItem(
+                "satyam_user",
+                JSON.stringify(data.user)
+            );
+        }
+
+
+        loginMessage.innerHTML =
+            '<div class="notice success">Login successful. Opening SATYAM...</div>';
+
+
+        setTimeout(function() {
+
+            window.location.href = "02_commandcenter.html";
+
+        }, 500);
+
+
+    } catch (error) {
+
+        console.error("Login error:", error);
+
+        loginMessage.innerHTML =
+            '<div class="notice error">' +
+            escapeHtml(error.message || "Unable to connect to SATYAM backend.") +
+            '</div>';
+
+    } finally {
+
+        loginButton.disabled = false;
+        loginButton.textContent = "↪ Login";
+
+    }
+
+});
+
+
+function escapeHtml(value) {
+
+    const div = document.createElement("div");
+
+    div.textContent = value;
+
+    return div.innerHTML;
+
+}
+
+</script>
+
+</body>
+</html>
