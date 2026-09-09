@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SATYAM — Command Center</title>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                🛡
+            </div>
+
+            <div>
+                <b>SATYAM</b>
+                <small>SMART PROCUREMENT AI</small>
+            </div>
+
+        </div>
+
+
+        <nav class="nav">
+
+            <a class="active" href="02_commandcenter.html">
+                ⌂ Command Center
+            </a>
+
+            <a href="03_TenderAnalysis.html">
+                ⌕ Tender Analysis
+            </a>
+
+            <a href="04_Bidderverification.html">
+                ♟ Bidder Verification
+            </a>
+
+            <a href="05_Documentverify.html">
+                ▣ Document Verification
+            </a>
+
+            <a href="06_AI_compliance.html">
+                ✦ AI Compliance
+            </a>
+
+            <a href="07_Risk_intelligence.html">
+                ⚠ Risk Intelligence
+            </a>
+
+            <a href="08_bidder_fingerprint.html">
+                ⌁ Bidder Fingerprint
+            </a>
+
+            <a href="09_continuousmonitor.html">
+                ↻ Continuous Monitoring
+            </a>
+
+            <a href="10_report_trails.html">
+                ◴ Reports & Audit Trails
+            </a>
+
+        </nav>
+
+
+        <button
+            class="btn btn-outline"
+            style="position:absolute;bottom:20px;left:14px;right:14px"
+            onclick="logout()">
+
+            Logout
+
+        </button>
+
+    </aside>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main">
+
+        <!-- TOP BAR -->
+
+        <header class="topbar">
+
+            <h1>
+                Command Center
+            </h1>
+
+            <div class="user">
+
+                <div class="avatar">
+                    SO
+                </div>
+
+                Procurement Officer
+
+            </div>
+
+        </header>
+
+
+        <!-- ================= CONTENT ================= -->
+
+        <div class="content">
+
+
+            <!-- HERO -->
+
+            <div class="hero">
+
+                <h2>
+                    SATYAM Procurement Intelligence
+                </h2>
+
+                <p>
+                    Real-time procurement verification and compliance monitoring.
+                </p>
+
+            </div>
+
+
+            <!-- ================= METRICS ================= -->
+
+            <div class="grid grid4">
+
+
+                <!-- BIDDERS -->
+
+                <div class="card metric">
+
+                    <div>
+
+                        <div class="label">
+                            REGISTERED BIDDERS
+                        </div>
+
+                        <div
+                            class="value"
+                            id="bidderCount">
+
+                            —
+
+                        </div>
+
+                    </div>
+
+                    <div class="iconbox">
+                        ♟
+                    </div>
+
+                </div>
+
+
+                <!-- TENDERS -->
+
+                <div class="card metric">
+
+                    <div>
+
+                        <div class="label">
+                            ACTIVE TENDERS
+                        </div>
+
+                        <div
+                            class="value"
+                            id="tenderCount">
+
+                            —
+
+                        </div>
+
+                    </div>
+
+                    <div class="iconbox">
+                        ⌕
+                    </div>
+
+                </div>
+
+
+                <!-- DOCUMENTS -->
+
+                <div class="card metric">
+
+                    <div>
+
+                        <div class="label">
+                            DOCUMENTS
+                        </div>
+
+                        <div
+                            class="value"
+                            id="documentCount">
+
+                            —
+
+                        </div>
+
+                    </div>
+
+                    <div class="iconbox">
+                        ▣
+                    </div>
+
+                </div>
+
+
+                <!-- AUDIT -->
+
+                <div class="card metric">
+
+                    <div>
+
+                        <div class="label">
+                            AUDIT EVENTS
+                        </div>
+
+                        <div
+                            class="value"
+                            id="auditCount">
+
+                            —
+
+                        </div>
+
+                    </div>
+
+                    <div class="iconbox">
+                        ◴
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= SYSTEM STATUS ================= -->
+
+            <div class="section-title">
+
+                <h3>
+                    System Status
+                </h3>
+
+                <button
+                    class="btn btn-outline"
+                    onclick="loadDashboard()">
+
+                    ↻ Refresh
+
+                </button>
+
+            </div>
+
+
+            <div
+                class="card"
+                id="health">
+
+                <div class="notice info">
+
+                    Checking SATYAM backend...
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= LIVE DATA ================= -->
+
+            <div class="section-title">
+
+                <h3>
+                    Live Procurement Data
+                </h3>
+
+            </div>
+
+
+            <div class="grid grid3">
+
+
+                <!-- BIDDER STATUS -->
+
+                <div class="card">
+
+                    <div class="label">
+                        BIDDER DATABASE
+                    </div>
+
+                    <h3 id="bidderStatus">
+                        Checking...
+                    </h3>
+
+                    <p style="color:var(--text-muted)">
+                        Registered bidder records available
+                        through the SATYAM API.
+                    </p>
+
+                    <button
+                        class="btn btn-outline"
+                        onclick="location.href='04_Bidderverification.html'">
+
+                        View Bidders
+
+                    </button>
+
+                </div>
+
+
+                <!-- DOCUMENT STATUS -->
+
+                <div class="card">
+
+                    <div class="label">
+                        DOCUMENT PROCESSING
+                    </div>
+
+                    <h3 id="documentStatus">
+                        Checking...
+                    </h3>
+
+                    <p style="color:var(--text-muted)">
+                        Uploaded procurement documents
+                        available for OCR and verification.
+                    </p>
+
+                    <button
+                        class="btn btn-outline"
+                        onclick="location.href='05_Documentverify.html'">
+
+                        Verify Documents
+
+                    </button>
+
+                </div>
+
+
+                <!-- AI STATUS -->
+
+                <div class="card">
+
+                    <div class="label">
+                        AI COMPLIANCE
+                    </div>
+
+                    <h3>
+                        Qwen 2.5:3B
+                    </h3>
+
+                    <p style="color:var(--text-muted)">
+                        Local AI engine used for compliance
+                        analysis and evidence-based reasoning.
+                    </p>
+
+                    <button
+                        class="btn btn-outline"
+                        onclick="location.href='06_AI_compliance.html'">
+
+                        Open AI Compliance
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= QUICK ACTIONS ================= -->
+
+            <div class="section-title">
+
+                <h3>
+                    Quick Actions
+                </h3>
+
+            </div>
+
+
+            <div class="grid grid3">
+
+
+                <div class="card">
+
+                    <h3>
+                        📄 Document Verification
+                    </h3>
+
+                    <p style="color:var(--text-muted)">
+                        Upload a PDF and extract its contents
+                        using the SATYAM OCR pipeline.
+                    </p>
+
+                    <button
+                        class="btn btn-primary"
+                        onclick="location.href='05_Documentverify.html'">
+
+                        Upload Document
+
+                    </button>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ✦ AI Compliance
+                    </h3>
+
+                    <p style="color:var(--text-muted)">
+                        Run local Qwen AI against a document
+                        and procurement requirement.
+                    </p>
+
+                    <button
+                        class="btn btn-primary"
+                        onclick="location.href='06_AI_compliance.html'">
+
+                        Run AI Analysis
+
+                    </button>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        ⚠ Risk Intelligence
+                    </h3>
+
+                    <p style="color:var(--text-muted)">
+                        Calculate bidder risk from verification
+                        results stored in the database.
+                    </p>
+
+                    <button
+                        class="btn btn-primary"
+                        onclick="location.href='07_Risk_intelligence.html'">
+
+                        Calculate Risk
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script src="app.js"></script>
+
+<script>
+
+guard();
+
+
+// --------------------------------------------------
+// LOAD COMMAND CENTER
+// --------------------------------------------------
+
+async function loadDashboard() {
+
+    const bidderCount =
+        document.getElementById("bidderCount");
+
+    const tenderCount =
+        document.getElementById("tenderCount");
+
+    const documentCount =
+        document.getElementById("documentCount");
+
+    const auditCount =
+        document.getElementById("auditCount");
+
+    const health =
+        document.getElementById("health");
+
+    const bidderStatus =
+        document.getElementById("bidderStatus");
+
+    const documentStatus =
+        document.getElementById("documentStatus");
+
+
+    // Reset
+
+    bidderCount.textContent = "…";
+    tenderCount.textContent = "…";
+    documentCount.textContent = "…";
+    auditCount.textContent = "…";
+
+    health.innerHTML = `
+        <div class="notice info">
+            Connecting to SATYAM backend...
+        </div>
+    `;
+
+
+    try {
+
+        // ------------------------------------------
+        // GET LIVE DATA
+        // ------------------------------------------
+
+        const [
+            bidders,
+            tenders,
+            documents,
+            audit
+        ] = await Promise.all([
+
+            api("/api/bidders"),
+
+            api("/api/tenders"),
+
+            api("/api/documents"),
+
+            api("/api/audit")
+
+        ]);
+
+
+        // ------------------------------------------
+        // UPDATE METRICS
+        // ------------------------------------------
+
+        bidderCount.textContent =
+            bidders.length;
+
+        tenderCount.textContent =
+            tenders.length;
+
+        documentCount.textContent =
+            documents.length;
+
+        auditCount.textContent =
+            audit.length;
+
+
+        // ------------------------------------------
+        // UPDATE STATUS CARDS
+        // ------------------------------------------
+
+        bidderStatus.textContent =
+            `${bidders.length} bidder record(s) available`;
+
+
+        documentStatus.textContent =
+            `${documents.length} document(s) uploaded`;
+
+
+        // ------------------------------------------
+        // BACKEND ONLINE
+        // ------------------------------------------
+
+        health.innerHTML = `
+            <div class="notice success">
+
+                ✓ SATYAM backend is online.
+
+                <br>
+
+                <small>
+                    FastAPI connected successfully.
+                    Live database data loaded.
+                </small>
+
+            </div>
+        `;
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "SATYAM dashboard error:",
+            error
+        );
+
+
+        // ------------------------------------------
+        // BACKEND ERROR
+        // ------------------------------------------
+
+        bidderCount.textContent = "—";
+        tenderCount.textContent = "—";
+        documentCount.textContent = "—";
+        auditCount.textContent = "—";
+
+
+        health.innerHTML = `
+            <div class="notice error">
+
+                ✕ Backend connection failed.
+
+                <br>
+
+                <small>
+                    ${esc(error.message)}
+                </small>
+
+                <br><br>
+
+                Make sure FastAPI is running at:
+
+                <br>
+
+                <b>
+                    http://127.0.0.1:8000
+                </b>
+
+            </div>
+        `;
+
+
+        bidderStatus.textContent =
+            "Backend unavailable";
+
+
+        documentStatus.textContent =
+            "Backend unavailable";
+
+    }
+
+}
+
+
+// --------------------------------------------------
+// START DASHBOARD
+// --------------------------------------------------
+
+loadDashboard();
+
+
+// --------------------------------------------------
+// AUTO REFRESH EVERY 30 SECONDS
+// --------------------------------------------------
+
+setInterval(
+    loadDashboard,
+    30000
+);
+
+</script>
+
+</body>
+</html>
