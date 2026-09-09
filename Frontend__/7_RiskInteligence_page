@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SATYAM — Risk Intelligence</title>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">🛡</div>
+
+            <div>
+                <b>SATYAM</b>
+                <small>SMART PROCUREMENT AI</small>
+            </div>
+        </div>
+
+        <nav class="nav">
+
+            <a data-page="dashboard"
+               href="02_commandcenter.html">
+                ⌂ Command Center
+            </a>
+
+            <a data-page="tenders"
+               href="03_TenderAnalysis.html">
+                ⌕ Tender Analysis
+            </a>
+
+            <a data-page="bidders"
+               href="04_Bidderverification.html">
+                ♟ Bidder Verification
+            </a>
+
+            <a data-page="documents"
+               href="05_Documentverify.html">
+                ▣ Document Verification
+            </a>
+
+            <a data-page="ai"
+               href="06_AI_compliance.html">
+                ✦ AI Compliance
+            </a>
+
+            <a data-page="risk"
+               href="07_Risk_intelligence.html">
+                ⚠ Risk Intelligence
+            </a>
+
+            <a data-page="fingerprint"
+               href="08_bidder_fingerprint.html">
+                ⌁ Bidder Fingerprint
+            </a>
+
+            <a data-page="monitor"
+               href="09_continuousmonitor.html">
+                ↻ Continuous Monitoring
+            </a>
+
+            <a data-page="reports"
+               href="10_report_trails.html">
+                ◴ Reports & Audit Trails
+            </a>
+
+        </nav>
+
+        <button
+            class="btn btn-outline"
+            style="position:absolute;bottom:20px;left:14px;right:14px"
+            onclick="logout()">
+            Logout
+        </button>
+
+    </aside>
+
+
+    <!-- ================= MAIN ================= -->
+    <main class="main">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+
+            <h1>Risk Intelligence</h1>
+
+            <div class="user">
+                <div class="avatar">SO</div>
+                Procurement Officer
+            </div>
+
+        </header>
+
+
+        <!-- ================= CONTENT ================= -->
+        <div class="content">
+
+            <!-- HERO -->
+            <div class="hero">
+
+                <h2>Bidder Risk Intelligence</h2>
+
+                <p>
+                    Analyse bidder verification results and calculate
+                    the overall procurement risk score.
+                </p>
+
+            </div>
+
+
+            <!-- ================= SELECT BIDDER ================= -->
+            <div class="card">
+
+                <h3>Bidder Risk Assessment</h3>
+
+                <p>
+                    Select a bidder to calculate the current risk level.
+                </p>
+
+                <div class="form-grid">
+
+                    <div class="field">
+
+                        <label for="bidder">
+                            BIDDER
+                        </label>
+
+                        <select id="bidder">
+
+                            <option value="">
+                                Loading bidders...
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            ACTION
+                        </label>
+
+                        <button
+                            class="btn btn-primary"
+                            style="width:100%"
+                            onclick="calculateRisk()">
+
+                            Calculate Risk
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div id="message"></div>
+
+            </div>
+
+
+            <!-- ================= RESULT ================= -->
+            <div
+                id="result"
+                class="card"
+                style="margin-top:18px">
+
+                <div class="empty">
+                    Select a bidder and click
+                    <b>Calculate Risk</b>.
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script src="app.js"></script>
+
+<script>
+
+    /* Protect page */
+    guard();
+
+    /* Highlight Risk Intelligence */
+    nav("risk");
+
+
+    /* Load bidders */
+    biddersSelect("bidder");
+
+
+    /* ================= CALCULATE RISK ================= */
+
+    async function calculateRisk() {
+
+        const bidderId = document.getElementById("bidder").value;
+
+        const resultBox = document.getElementById("result");
+
+        const messageBox = document.getElementById("message");
+
+
+        /* Validate bidder */
+
+        if (!bidderId) {
+
+            msg(
+                "message",
+                "Please select a bidder first.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        /* Loading state */
+
+        resultBox.innerHTML = `
+            <div class="empty">
+                Calculating bidder risk...
+            </div>
+        `;
+
+
+        try {
+
+            /* Call backend */
+
+            const data = await api(
+                `/api/risk/${bidderId}`
+            );
+
+
+            /* Check backend response */
+
+            if (data.status === "error") {
+
+                throw new Error(
+                    data.message || "Risk calculation failed."
+                );
+
+            }
+
+
+            /* Determine tag */
+
+            let riskTag = "PASS";
+
+            if (data.risk_level === "HIGH") {
+
+                riskTag = "FAIL";
+
+            } else if (data.risk_level === "MEDIUM") {
+
+                riskTag = "REVIEW";
+
+            }
+
+
+            /* Display result */
+
+            resultBox.innerHTML = `
+
+                <h3>Risk Assessment Result</h3>
+
+                <div
+                    class="grid grid3"
+                    style="margin-top:18px">
+
+                    <!-- Risk Score -->
+
+                    <div class="card">
+
+                        <div class="label">
+                            RISK SCORE
+                        </div>
+
+                        <div class="value">
+                            ${data.risk_score ?? 0}
+                        </div>
+
+                    </div>
+
+
+                    <!-- Risk Level -->
+
+                    <div class="card">
+
+                        <div class="label">
+                            RISK LEVEL
+                        </div>
+
+                        <div style="margin-top:10px">
+                            ${tag(riskTag)}
+                        </div>
+
+                    </div>
+
+
+                    <!-- Verification Count -->
+
+                    <div class="card">
+
+                        <div class="label">
+                            VERIFICATIONS
+                        </div>
+
+                        <div class="value">
+                            ${data.verification_count ?? 0}
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Explanation -->
+
+                <div
+                    class="notice info"
+                    style="margin-top:18px">
+
+                    <b>Risk Assessment:</b>
+
+                    ${
+                        data.message
+                        || "Risk calculated from bidder verification results."
+                    }
+
+                </div>
+
+            `;
+
+
+            /* Success message */
+
+            msg(
+                "message",
+                "Risk assessment completed successfully.",
+                "success"
+            );
+
+
+        } catch (error) {
+
+            resultBox.innerHTML = `
+
+                <div class="notice error">
+
+                    <b>Risk calculation failed.</b><br><br>
+
+                    ${esc(error.message)}
+
+                </div>
+
+            `;
+
+        }
+
+    }
+
+</script>
+
+</body>
+</html>
