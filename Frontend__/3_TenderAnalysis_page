@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SATYAM — Tender Analysis</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">🛡</div>
+            <div>
+                <b>SATYAM</b>
+                <small>SMART PROCUREMENT AI</small>
+            </div>
+        </div>
+
+        <nav class="nav">
+            <a data-page="dashboard" href="02_commandcenter.html">⌂ Command Center</a>
+            <a data-page="tenders" href="03_TenderAnalysis.html">⌕ Tender Analysis</a>
+            <a data-page="bidders" href="04_Bidderverification.html">♟ Bidder Verification</a>
+            <a data-page="documents" href="05_Documentverify.html">▣ Document Verification</a>
+            <a data-page="ai" href="06_AI_compliance.html">✦ AI Compliance</a>
+            <a data-page="risk" href="07_Risk_intelligence.html">⚠ Risk Intelligence</a>
+            <a data-page="fingerprint" href="08_bidder_fingerprint.html">⌁ Bidder Fingerprint</a>
+            <a data-page="monitor" href="09_continuousmonitor.html">↻ Continuous Monitoring</a>
+            <a data-page="reports" href="10_report_trails.html">◴ Reports & Audit Trails</a>
+        </nav>
+
+        <button
+            class="btn btn-outline"
+            style="position:absolute;bottom:20px;left:14px;right:14px"
+            onclick="logout()">
+            Logout
+        </button>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+            <h1>Tender Analysis</h1>
+
+            <div class="user">
+                <div class="avatar">SO</div>
+                Procurement Officer
+            </div>
+        </header>
+
+
+        <div class="content">
+
+            <!-- PAGE INTRO -->
+            <div class="hero">
+                <h2>Procurement Tender Intelligence</h2>
+                <p>
+                    Create and analyse procurement tenders using the SATYAM backend.
+                    Tender information is loaded directly from the database.
+                </p>
+            </div>
+
+
+            <!-- CREATE TENDER -->
+            <div class="section-title">
+                <h3>Create New Tender</h3>
+            </div>
+
+            <div class="card">
+
+                <form id="tenderForm">
+
+                    <div class="grid grid2">
+
+                        <div>
+                            <label for="tenderNumber">
+                                Tender Number
+                            </label>
+
+                            <input
+                                id="tenderNumber"
+                                type="text"
+                                placeholder="e.g. GEM/2026/B/1234567"
+                                required>
+                        </div>
+
+
+                        <div>
+                            <label for="tenderTitle">
+                                Tender Title
+                            </label>
+
+                            <input
+                                id="tenderTitle"
+                                type="text"
+                                placeholder="Enter tender title"
+                                required>
+                        </div>
+
+                    </div>
+
+
+                    <div style="margin-top:16px">
+
+                        <label for="tenderDescription">
+                            Tender Description
+                        </label>
+
+                        <textarea
+                            id="tenderDescription"
+                            rows="5"
+                            placeholder="Enter tender requirements and description..."
+                            required></textarea>
+
+                    </div>
+
+
+                    <div style="margin-top:16px">
+
+                        <button
+                            class="btn btn-primary"
+                            type="submit"
+                            id="createBtn">
+                            Create Tender
+                        </button>
+
+                        <button
+                            class="btn btn-outline"
+                            type="button"
+                            onclick="resetForm()">
+                            Clear
+                        </button>
+
+                    </div>
+
+                </form>
+
+
+                <div
+                    id="formMessage"
+                    style="margin-top:16px">
+                </div>
+
+            </div>
+
+
+            <!-- TENDER LIST -->
+            <div class="section-title" style="margin-top:28px">
+
+                <div>
+                    <h3>Live Tenders</h3>
+                    <p class="muted">
+                        Tenders currently stored in SATYAM.
+                    </p>
+                </div>
+
+                <button
+                    class="btn btn-outline"
+                    onclick="loadTenders()">
+                    ↻ Refresh
+                </button>
+
+            </div>
+
+
+            <!-- TABLE -->
+            <div class="card">
+
+                <div class="table-wrap">
+
+                    <table class="table">
+
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tender Number</th>
+                                <th>Title</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="rows">
+
+                            <tr>
+                                <td colspan="4" class="empty">
+                                    Loading tenders...
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+            <!-- STATUS -->
+            <div
+                class="card"
+                id="statusCard"
+                style="margin-top:20px">
+
+                Checking backend connection...
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script src="app.js"></script>
+
+<script>
+
+    guard();
+    nav("tenders");
+
+
+    // --------------------------------------------------
+    // LOAD TENDERS
+    // --------------------------------------------------
+
+    async function loadTenders() {
+
+        const rowsElement = document.getElementById("rows");
+
+        rowsElement.innerHTML = `
+            <tr>
+                <td colspan="4" class="empty">
+                    Loading tenders...
+                </td>
+            </tr>
+        `;
+
+        try {
+
+            const tenders = await api("/api/tenders");
+
+            console.log("SATYAM Tenders:", tenders);
+
+
+            if (!Array.isArray(tenders) || tenders.length === 0) {
+
+                rowsElement.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="empty">
+                            No tenders found.
+                        </td>
+                    </tr>
+                `;
+
+                return;
+            }
+
+
+            rowsElement.innerHTML = tenders.map(tender => {
+
+                const id =
+                    tender.id ?? "-";
+
+                const number =
+                    tender.tender_number ?? "-";
+
+                const title =
+                    tender.title ??
+                    tender.tender_name ??
+                    "-";
+
+                const description =
+                    tender.description ??
+                    "-";
+
+
+                return `
+                    <tr>
+
+                        <td>
+                            <b>${esc(id)}</b>
+                        </td>
+
+                        <td>
+                            ${esc(number)}
+                        </td>
+
+                        <td>
+                            <b>${esc(title)}</b>
+                        </td>
+
+                        <td>
+                            ${esc(description)}
+                        </td>
+
+                    </tr>
+                `;
+
+            }).join("");
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            rowsElement.innerHTML = `
+                <tr>
+                    <td colspan="4" class="empty">
+                        <div class="notice error">
+                            ${esc(error.message)}
+                        </div>
+                    </td>
+                </tr>
+            `;
+
+        }
+
+    }
+
+
+    // --------------------------------------------------
+    // CREATE TENDER
+    // --------------------------------------------------
+
+    document
+        .getElementById("tenderForm")
+        .addEventListener("submit", async function(event) {
+
+            event.preventDefault();
+
+
+            const tenderNumber =
+                document
+                    .getElementById("tenderNumber")
+                    .value
+                    .trim();
+
+
+            const tenderTitle =
+                document
+                    .getElementById("tenderTitle")
+                    .value
+                    .trim();
+
+
+            const tenderDescription =
+                document
+                    .getElementById("tenderDescription")
+                    .value
+                    .trim();
+
+
+            const createButton =
+                document.getElementById("createBtn");
+
+
+            const message =
+                document.getElementById("formMessage");
+
+
+            if (!tenderNumber ||
+                !tenderTitle ||
+                !tenderDescription) {
+
+                message.innerHTML = `
+                    <div class="notice error">
+                        Please fill in all tender fields.
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            createButton.disabled = true;
+            createButton.textContent = "Creating...";
+
+
+            message.innerHTML = "";
+
+
+            try {
+
+                const result = await api(
+                    "/api/tenders",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            tender_number:
+                                tenderNumber,
+
+                            title:
+                                tenderTitle,
+
+                            description:
+                                tenderDescription
+
+                        })
+
+                    }
+                );
+
+
+                console.log(
+                    "Tender created:",
+                    result
+                );
+
+
+                message.innerHTML = `
+                    <div class="notice success">
+                        Tender created successfully.
+                        Tender ID:
+                        <b>${esc(result.tender_id ?? "-")}</b>
+                    </div>
+                `;
+
+
+                resetForm();
+
+
+                // Reload real database data
+                await loadTenders();
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                message.innerHTML = `
+                    <div class="notice error">
+                        ${esc(error.message)}
+                    </div>
+                `;
+
+            } finally {
+
+                createButton.disabled = false;
+                createButton.textContent = "Create Tender";
+
+            }
+
+        });
+
+
+    // --------------------------------------------------
+    // RESET FORM
+    // --------------------------------------------------
+
+    function resetForm() {
+
+        document
+            .getElementById("tenderForm")
+            .reset();
+
+    }
+
+
+    // --------------------------------------------------
+    // BACKEND HEALTH
+    // --------------------------------------------------
+
+    async function checkBackend() {
+
+        const statusCard =
+            document.getElementById("statusCard");
+
+
+        try {
+
+            await api("/api/health");
+
+            statusCard.innerHTML = `
+                <div class="notice success">
+                    ✓ SATYAM backend is online.
+                </div>
+            `;
+
+        } catch (error) {
+
+            statusCard.innerHTML = `
+                <div class="notice error">
+                    ✕ Backend is not reachable.
+                    Make sure FastAPI is running on
+                    <b>127.0.0.1:8000</b>.
+                </div>
+            `;
+
+        }
+
+    }
+
+
+    // --------------------------------------------------
+    // INITIAL LOAD
+    // --------------------------------------------------
+
+    loadTenders();
+    checkBackend();
+
+</script>
+
+</body>
+</html>
