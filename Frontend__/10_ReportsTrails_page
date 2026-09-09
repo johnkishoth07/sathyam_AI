@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SATYAM — Reports & Audit Trails</title>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">🛡</div>
+
+            <div>
+                <b>SATYAM</b>
+                <small>SMART PROCUREMENT AI</small>
+            </div>
+        </div>
+
+        <nav class="nav">
+
+            <a data-page="dashboard"
+               href="02_commandcenter.html">
+                ⌂ Command Center
+            </a>
+
+            <a data-page="tenders"
+               href="03_TenderAnalysis.html">
+                ⌕ Tender Analysis
+            </a>
+
+            <a data-page="bidders"
+               href="04_Bidderverification.html">
+                ♟ Bidder Verification
+            </a>
+
+            <a data-page="documents"
+               href="05_Documentverify.html">
+                ▣ Document Verification
+            </a>
+
+            <a data-page="ai"
+               href="06_AI_compliance.html">
+                ✦ AI Compliance
+            </a>
+
+            <a data-page="risk"
+               href="07_Risk_intelligence.html">
+                ⚠ Risk Intelligence
+            </a>
+
+            <a data-page="fingerprint"
+               href="08_bidder_fingerprint.html">
+                ⌁ Bidder Fingerprint
+            </a>
+
+            <a data-page="monitor"
+               href="09_continuousmonitor.html">
+                ↻ Continuous Monitoring
+            </a>
+
+            <a data-page="reports"
+               href="10_report_trails.html">
+                ◴ Reports & Audit Trails
+            </a>
+
+        </nav>
+
+        <button
+            class="btn btn-outline"
+            style="position:absolute;bottom:20px;left:14px;right:14px"
+            onclick="logout()">
+
+            Logout
+
+        </button>
+
+    </aside>
+
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+
+            <h1>Reports & Audit Trails</h1>
+
+            <div class="user">
+
+                <div class="avatar">
+                    SO
+                </div>
+
+                Procurement Officer
+
+            </div>
+
+        </header>
+
+
+        <!-- CONTENT -->
+        <div class="content">
+
+
+            <!-- AUDIT TRAIL -->
+            <div class="card">
+
+                <div
+                    class="section-title"
+                    style="margin-top:0">
+
+                    <div>
+
+                        <h3>
+                            Audit Trail
+                        </h3>
+
+                        <p>
+                            Complete record of SATYAM verification
+                            and AI compliance activities.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        class="btn btn-outline"
+                        onclick="loadAudit()">
+
+                        ↻ Refresh
+
+                    </button>
+
+                </div>
+
+
+                <div class="table-wrap">
+
+                    <table class="table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>ID</th>
+
+                                <th>Action</th>
+
+                                <th>Entity</th>
+
+                                <th>Details</th>
+
+                                <th>Created</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="auditRows">
+
+                            <tr>
+
+                                <td
+                                    colspan="5"
+                                    class="empty">
+
+                                    Loading audit trail...
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+            <!-- FINAL DECISION -->
+            <div
+                class="card"
+                style="margin-top:18px">
+
+                <h3>
+                    Final Procurement Decision
+                </h3>
+
+                <p>
+                    Calculate the final bidder decision using
+                    the SATYAM risk engine.
+                </p>
+
+
+                <div class="form-grid">
+
+                    <div class="field">
+
+                        <label>
+                            BIDDER ID
+                        </label>
+
+                        <input
+                            id="bidderId"
+                            type="number"
+                            min="1"
+                            placeholder="Enter bidder ID">
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>&nbsp;</label>
+
+                        <button
+                            class="btn btn-primary"
+                            style="width:100%"
+                            onclick="getDecision()">
+
+                            Get Final Decision
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="decisionBox"
+                    style="margin-top:18px">
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script src="app.js"></script>
+
+
+<script>
+
+    // Protect page
+    guard();
+
+    // Highlight current page
+    nav("reports");
+
+
+    const auditRows =
+        document.getElementById("auditRows");
+
+    const bidderId =
+        document.getElementById("bidderId");
+
+    const decisionBox =
+        document.getElementById("decisionBox");
+
+
+    // Escape HTML safely
+    function safe(value) {
+
+        if (
+            value === null ||
+            value === undefined ||
+            value === ""
+        ) {
+            return "-";
+        }
+
+        if (typeof esc === "function") {
+            return esc(String(value));
+        }
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    // Load audit trail
+    async function loadAudit() {
+
+        auditRows.innerHTML = `
+            <tr>
+                <td colspan="5" class="empty">
+                    Loading audit records...
+                </td>
+            </tr>
+        `;
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "http://127.0.0.1:8000/api/audit"
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Unable to load audit trail"
+                );
+
+            }
+
+
+            const audits =
+                await response.json();
+
+
+            if (!audits.length) {
+
+                auditRows.innerHTML = `
+                    <tr>
+                        <td
+                            colspan="5"
+                            class="empty">
+
+                            No audit logs found.
+
+                        </td>
+                    </tr>
+                `;
+
+                return;
+            }
+
+
+            auditRows.innerHTML =
+                audits.map(event => `
+
+                    <tr>
+
+                        <td>
+                            ${safe(event.id)}
+                        </td>
+
+                        <td>
+                            <strong>
+                                ${safe(event.action)}
+                            </strong>
+                        </td>
+
+                        <td>
+                            ${safe(event.entity_type)}
+                            #${safe(event.entity_id)}
+                        </td>
+
+                        <td>
+                            ${safe(event.details)}
+                        </td>
+
+                        <td>
+                            ${safe(event.created_at)}
+                        </td>
+
+                    </tr>
+
+                `).join("");
+
+
+        }
+
+        catch (error) {
+
+            auditRows.innerHTML = `
+                <tr>
+                    <td
+                        colspan="5"
+                        class="empty">
+
+                        ${safe(error.message)}
+
+                    </td>
+                </tr>
+            `;
+
+        }
+
+    }
+
+
+    // Get final decision
+    async function getDecision() {
+
+        const id =
+            bidderId.value.trim();
+
+
+        if (!id) {
+
+            decisionBox.innerHTML = `
+                <div class="notice error">
+                    Please enter a bidder ID.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        decisionBox.innerHTML = `
+            <div class="empty">
+                Calculating final decision...
+            </div>
+        `;
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `http://127.0.0.1:8000/api/final-decision/${encodeURIComponent(id)}`
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Unable to calculate final decision"
+                );
+
+            }
+
+
+            const result =
+                await response.json();
+
+
+            let noticeClass = "info";
+
+
+            if (
+                result.final_decision === "APPROVE"
+            ) {
+
+                noticeClass = "success";
+
+            }
+
+            else if (
+                result.final_decision === "REJECT"
+            ) {
+
+                noticeClass = "error";
+
+            }
+
+
+            decisionBox.innerHTML = `
+
+                <div class="notice ${noticeClass}">
+
+                    <h3>
+                        Final Decision:
+                        ${safe(result.final_decision)}
+                    </h3>
+
+                    <p>
+                        <strong>Bidder ID:</strong>
+                        ${safe(result.bidder_id)}
+                    </p>
+
+                    <p>
+                        <strong>Risk Level:</strong>
+                        ${safe(result.risk_level)}
+                    </p>
+
+                    <p>
+                        <strong>Risk Score:</strong>
+                        ${safe(result.risk_score)}
+                    </p>
+
+                    <p>
+                        <strong>Verification Count:</strong>
+                        ${safe(result.verification_count)}
+                    </p>
+
+                </div>
+
+            `;
+
+
+        }
+
+        catch (error) {
+
+            decisionBox.innerHTML = `
+                <div class="notice error">
+                    ${safe(error.message)}
+                </div>
+            `;
+
+        }
+
+    }
+
+
+    // Load audit records when page opens
+    loadAudit();
+
+
+</script>
+
+</body>
+</html>
