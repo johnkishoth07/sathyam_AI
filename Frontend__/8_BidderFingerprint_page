@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SATYAM — Bidder Digital Fingerprint</title>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">🛡</div>
+            <div>
+                <b>SATYAM</b>
+                <small>SMART PROCUREMENT AI</small>
+            </div>
+        </div>
+
+        <nav class="nav">
+
+            <a data-page="dashboard"
+               href="02_commandcenter.html">
+                ⌂ Command Center
+            </a>
+
+            <a data-page="tenders"
+               href="03_TenderAnalysis.html">
+                ⌕ Tender Analysis
+            </a>
+
+            <a data-page="bidders"
+               href="04_Bidderverification.html">
+                ♟ Bidder Verification
+            </a>
+
+            <a data-page="documents"
+               href="05_Documentverify.html">
+                ▣ Document Verification
+            </a>
+
+            <a data-page="ai"
+               href="06_AI_compliance.html">
+                ✦ AI Compliance
+            </a>
+
+            <a data-page="risk"
+               href="07_Risk_intelligence.html">
+                ⚠ Risk Intelligence
+            </a>
+
+            <a data-page="fingerprint"
+               href="08_bidder_fingerprint.html">
+                ⌁ Bidder Fingerprint
+            </a>
+
+            <a data-page="monitor"
+               href="09_continuousmonitor.html">
+                ↻ Continuous Monitoring
+            </a>
+
+            <a data-page="reports"
+               href="10_report_trails.html">
+                ◴ Reports & Audit Trails
+            </a>
+
+        </nav>
+
+        <button
+            class="btn btn-outline"
+            style="position:absolute;bottom:20px;left:14px;right:14px"
+            onclick="logout()">
+            Logout
+        </button>
+
+    </aside>
+
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+
+            <h1>Bidder Digital Fingerprint</h1>
+
+            <div class="user">
+                <div class="avatar">SO</div>
+                Procurement Officer
+            </div>
+
+        </header>
+
+
+        <!-- CONTENT -->
+        <div class="content">
+
+            <!-- SELECT BIDDER -->
+            <div class="card">
+
+                <h3>Bidder Identity Snapshot</h3>
+
+                <p>
+                    Select a registered bidder to generate its digital identity
+                    fingerprint.
+                </p>
+
+                <div class="form-grid">
+
+                    <div class="field">
+
+                        <label>BIDDER</label>
+
+                        <select id="bidder">
+                            <option value="">
+                                Loading bidders...
+                            </option>
+                        </select>
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>&nbsp;</label>
+
+                        <button
+                            class="btn btn-primary"
+                            style="width:100%"
+                            onclick="loadOne()">
+
+                            Generate Fingerprint
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RESULT -->
+            <div
+                id="result"
+                class="card"
+                style="margin-top:18px">
+
+                <div class="empty">
+                    Choose a bidder and generate the fingerprint.
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script src="app.js"></script>
+
+<script>
+
+    // Protect page
+    guard();
+
+    // Highlight sidebar
+    nav("fingerprint");
+
+
+    const bidderSelect = document.getElementById("bidder");
+    const result = document.getElementById("result");
+
+
+    // Escape HTML safely
+    function safe(value) {
+
+        if (value === null || value === undefined || value === "") {
+            return "-";
+        }
+
+        if (typeof esc === "function") {
+            return esc(String(value));
+        }
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    // Load bidders from backend
+    async function loadBidders() {
+
+        try {
+
+            const response = await fetch(
+                "http://127.0.0.1:8000/api/bidders"
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to load bidders");
+            }
+
+            const bidders = await response.json();
+
+            bidderSelect.innerHTML =
+                '<option value="">Select bidder</option>';
+
+
+            if (!bidders.length) {
+
+                bidderSelect.innerHTML =
+                    '<option value="">No bidders found</option>';
+
+                return;
+            }
+
+
+            bidders.forEach(bidder => {
+
+                const option = document.createElement("option");
+
+                option.value = bidder.id;
+
+                option.textContent =
+                    `${bidder.company_name} — ID ${bidder.id}`;
+
+                bidderSelect.appendChild(option);
+
+            });
+
+        }
+
+        catch (error) {
+
+            bidderSelect.innerHTML =
+                '<option value="">Unable to load bidders</option>';
+
+            result.innerHTML = `
+                <div class="notice error">
+                    ${safe(error.message)}
+                </div>
+            `;
+
+        }
+
+    }
+
+
+    // Generate fingerprint
+    async function loadOne() {
+
+        const bidderId = bidderSelect.value;
+
+
+        if (!bidderId) {
+
+            result.innerHTML = `
+                <div class="notice error">
+                    Please select a bidder first.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        result.innerHTML = `
+            <div class="empty">
+                Loading bidder fingerprint...
+            </div>
+        `;
+
+
+        try {
+
+            const response = await fetch(
+                "http://127.0.0.1:8000/api/bidders"
+            );
+
+
+            if (!response.ok) {
+                throw new Error("Unable to retrieve bidder information");
+            }
+
+
+            const bidders = await response.json();
+
+
+            const bidder = bidders.find(
+                item => String(item.id) === String(bidderId)
+            );
+
+
+            if (!bidder) {
+
+                throw new Error(
+                    "Selected bidder was not found"
+                );
+
+            }
+
+
+            result.innerHTML = `
+
+                <h3>Digital Fingerprint</h3>
+
+                <p>
+                    Consolidated bidder identity and registration signals.
+                </p>
+
+
+                <div class="grid grid2">
+
+                    <div>
+
+                        <div class="label">
+                            LEGAL ENTITY
+                        </div>
+
+                        <h2>
+                            ${safe(bidder.company_name)}
+                        </h2>
+
+                        <p>
+                            Bidder ID:
+                            <strong>${safe(bidder.id)}</strong>
+                        </p>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="label">
+                            REGISTRATION SIGNALS
+                        </div>
+
+                        <p>
+                            <strong>GSTIN:</strong>
+                            ${safe(bidder.gstin)}
+                        </p>
+
+                        <p>
+                            <strong>PAN:</strong>
+                            ${safe(
+                                bidder.pan ||
+                                bidder.pan_number
+                            )}
+                        </p>
+
+                        <p>
+                            <strong>UDYAM:</strong>
+                            ${safe(bidder.udyam_number)}
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <hr>
+
+
+                <div class="grid grid2">
+
+                    <div>
+
+                        <div class="label">
+                            CONTACT SIGNAL
+                        </div>
+
+                        <p>
+                            <strong>Email:</strong>
+                            ${safe(bidder.email)}
+                        </p>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="label">
+                            IDENTITY STATUS
+                        </div>
+
+                        <p class="status-pass">
+                            ✓ REGISTERED BIDDER
+                        </p>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+
+        catch (error) {
+
+            result.innerHTML = `
+                <div class="notice error">
+                    ${safe(error.message)}
+                </div>
+            `;
+
+        }
+
+    }
+
+
+    // Start page
+    loadBidders();
+
+</script>
+
+</body>
+</html>
