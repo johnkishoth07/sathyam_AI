@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SATYAM | Document Verification</title>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-icon">🛡</div>
+
+            <div>
+                <b>SATYAM</b>
+                <small>SMART PROCUREMENT AI</small>
+            </div>
+
+        </div>
+
+
+        <nav class="nav">
+
+            <a href="02_commandcenter.html">
+                ⌂ Command Center
+            </a>
+
+            <a href="03_TenderAnalysis.html">
+                ⌕ Tender Analysis
+            </a>
+
+            <a href="04_Bidderverification.html">
+                ♟ Bidder Verification
+            </a>
+
+            <a class="active" href="05_Documentverify.html">
+                ▣ Document Verification
+            </a>
+
+            <a href="06_AI_compliance.html">
+                ✦ AI Compliance
+            </a>
+
+            <a href="07_Risk_intelligence.html">
+                ⚠ Risk Intelligence
+            </a>
+
+            <a href="08_bidder_fingerprint.html">
+                ⌁ Bidder Fingerprint
+            </a>
+
+            <a href="09_continuousmonitor.html">
+                ↻ Continuous Monitoring
+            </a>
+
+            <a href="10_report_trails.html">
+                ◴ Reports & Audit Trails
+            </a>
+
+        </nav>
+
+
+        <button
+            class="btn btn-outline"
+            style="position:absolute;bottom:20px;left:14px;right:14px"
+            onclick="logout()">
+
+            Logout
+
+        </button>
+
+    </aside>
+
+
+
+    <!-- ================= MAIN CONTENT ================= -->
+
+    <main class="main">
+
+
+        <!-- TOP BAR -->
+
+        <header class="topbar">
+
+            <h1>Document Verification</h1>
+
+            <div class="user">
+
+                <div class="avatar">
+                    SO
+                </div>
+
+                Procurement Officer
+
+            </div>
+
+        </header>
+
+
+
+        <!-- ================= CONTENT ================= -->
+
+        <div class="content">
+
+
+            <!-- PAGE INTRO -->
+
+            <div class="card">
+
+                <h2>Document Verification</h2>
+
+                <p>
+                    Upload bidder documents and extract information
+                    using OCR for automated verification.
+                </p>
+
+                <p id="backendStatus">
+                    Checking backend...
+                </p>
+
+            </div>
+
+
+
+            <!-- ================= UPLOAD CARD ================= -->
+
+            <div class="card">
+
+                <h3>Upload Document</h3>
+
+                <p>
+                    Select a bidder and upload a PDF document such as
+                    GST Certificate, PAN Certificate or Udyam Registration.
+                </p>
+
+
+                <div class="form-grid">
+
+
+                    <!-- BIDDER -->
+
+                    <div class="field">
+
+                        <label for="bidder">
+                            BIDDER
+                        </label>
+
+                        <select id="bidder">
+
+                            <option value="">
+                                Loading bidders...
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <!-- DOCUMENT TYPE -->
+
+                    <div class="field">
+
+                        <label for="documentType">
+                            DOCUMENT TYPE
+                        </label>
+
+                        <select id="documentType">
+
+                            <option value="GST Certificate">
+                                GST Certificate
+                            </option>
+
+                            <option value="PAN Certificate">
+                                PAN Certificate
+                            </option>
+
+                            <option value="Udyam Registration">
+                                Udyam Registration
+                            </option>
+
+                            <option value="Bank Guarantee">
+                                Bank Guarantee
+                            </option>
+
+                            <option value="Financial Statement">
+                                Financial Statement
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <!-- FILE -->
+
+                    <div class="field">
+
+                        <label for="file">
+                            PDF DOCUMENT
+                        </label>
+
+                        <input
+                            id="file"
+                            type="file"
+                            accept=".pdf,application/pdf">
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- ACTION -->
+
+                <div class="actions">
+
+                    <button
+                        class="btn btn-primary"
+                        id="uploadButton"
+                        onclick="uploadDocument()">
+
+                        Upload & Process
+
+                    </button>
+
+                    <span id="uploadMessage"></span>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ================= DOCUMENTS + OCR ================= -->
+
+            <div
+                class="grid grid2"
+                style="margin-top:18px">
+
+
+                <!-- SUBMITTED DOCUMENTS -->
+
+                <div class="card">
+
+                    <div
+                        class="section-title"
+                        style="margin-top:0">
+
+                        <div>
+
+                            <h3>
+                                Submitted Documents
+                            </h3>
+
+                            <p>
+                                Documents uploaded to SATYAM.
+                            </p>
+
+                        </div>
+
+
+                        <button
+                            class="btn btn-outline"
+                            onclick="loadDocuments()">
+
+                            Refresh
+
+                        </button>
+
+                    </div>
+
+
+
+                    <div class="table-wrap">
+
+                        <table class="table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Document
+                                    </th>
+
+                                    <th>
+                                        Bidder
+                                    </th>
+
+                                    <th>
+                                        Type
+                                    </th>
+
+                                    <th>
+                                        Action
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody id="documentRows">
+
+                                <tr>
+
+                                    <td
+                                        colspan="4"
+                                        class="empty">
+
+                                        Loading documents...
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- OCR -->
+
+                <div class="card">
+
+                    <h3>
+                        OCR Extracted Text
+                    </h3>
+
+                    <p>
+                        Text extracted from the selected PDF document.
+                    </p>
+
+
+                    <pre
+                        id="ocrText"
+                        style="
+                            min-height:250px;
+                            white-space:pre-wrap;
+                            overflow:auto;
+                        ">Select a document and click "View OCR".</pre>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script src="app.js"></script>
+
+
+<script>
+
+    /* =========================================
+       SATYAM BACKEND
+    ========================================= */
+
+    const API_BASE = "http://127.0.0.1:8000";
+
+
+    /* =========================================
+       ELEMENTS
+    ========================================= */
+
+    const bidderSelect =
+        document.getElementById("bidder");
+
+    const documentType =
+        document.getElementById("documentType");
+
+    const fileInput =
+        document.getElementById("file");
+
+    const uploadButton =
+        document.getElementById("uploadButton");
+
+    const uploadMessage =
+        document.getElementById("uploadMessage");
+
+    const documentRows =
+        document.getElementById("documentRows");
+
+    const ocrText =
+        document.getElementById("ocrText");
+
+    const backendStatus =
+        document.getElementById("backendStatus");
+
+
+
+    /* =========================================
+       PAGE LOAD
+    ========================================= */
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        loadBidders();
+
+        loadDocuments();
+
+        checkBackend();
+
+    });
+
+
+
+    /* =========================================
+       CHECK BACKEND
+    ========================================= */
+
+    async function checkBackend() {
+
+        try {
+
+            const response =
+                await fetch(API_BASE + "/api/health");
+
+            if (!response.ok) {
+                throw new Error("Backend unavailable");
+            }
+
+            backendStatus.textContent =
+                "● Backend Connected";
+
+            backendStatus.style.color =
+                "#16803c";
+
+        }
+
+        catch (error) {
+
+            backendStatus.textContent =
+                "● Backend Disconnected";
+
+            backendStatus.style.color =
+                "#c62828";
+
+        }
+
+    }
+
+
+
+    /* =========================================
+       LOAD BIDDERS
+    ========================================= */
+
+    async function loadBidders() {
+
+        bidderSelect.innerHTML =
+            `<option value="">Loading bidders...</option>`;
+
+        try {
+
+            const response =
+                await fetch(API_BASE + "/api/bidders");
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Unable to load bidders"
+                );
+
+            }
+
+            const bidders =
+                await response.json();
+
+
+            bidderSelect.innerHTML =
+                `<option value="">Select bidder</option>`;
+
+
+            if (!bidders.length) {
+
+                bidderSelect.innerHTML =
+                    `<option value="">No bidders found</option>`;
+
+                return;
+
+            }
+
+
+            bidders.forEach(function (bidder) {
+
+                const option =
+                    document.createElement("option");
+
+                option.value =
+                    bidder.id;
+
+                option.textContent =
+                    bidder.company_name +
+                    " — ID " +
+                    bidder.id;
+
+                bidderSelect.appendChild(option);
+
+            });
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+            bidderSelect.innerHTML =
+                `<option value="">Failed to load bidders</option>`;
+
+        }
+
+    }
+
+
+
+    /* =========================================
+       LOAD DOCUMENTS
+    ========================================= */
+
+    async function loadDocuments() {
+
+        documentRows.innerHTML =
+            `<tr>
+                <td colspan="4" class="empty">
+                    Loading documents...
+                </td>
+            </tr>`;
+
+
+        try {
+
+            const [documentsResponse, biddersResponse] =
+                await Promise.all([
+
+                    fetch(API_BASE + "/api/documents"),
+
+                    fetch(API_BASE + "/api/bidders")
+
+                ]);
+
+
+            if (!documentsResponse.ok) {
+
+                throw new Error(
+                    "Unable to load documents"
+                );
+
+            }
+
+
+            if (!biddersResponse.ok) {
+
+                throw new Error(
+                    "Unable to load bidders"
+                );
+
+            }
+
+
+            const documents =
+                await documentsResponse.json();
+
+            const bidders =
+                await biddersResponse.json();
+
+
+            /* Create bidder lookup */
+
+            const bidderMap = {};
+
+
+            bidders.forEach(function (bidder) {
+
+                bidderMap[bidder.id] =
+                    bidder.company_name;
+
+            });
+
+
+            /* No documents */
+
+            if (!documents.length) {
+
+                documentRows.innerHTML =
+                    `<tr>
+                        <td colspan="4" class="empty">
+                            No documents found.
+                        </td>
+                    </tr>`;
+
+                return;
+
+            }
+
+
+            /* Show documents */
+
+            documentRows.innerHTML = "";
+
+
+            documents.forEach(function (document) {
+
+                const row =
+                    document.createElement("tr");
+
+
+                const bidderName =
+                    bidderMap[document.bidder_id] ||
+                    "Bidder " + document.bidder_id;
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${escapeHTML(document.file_name || "PDF")}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(bidderName)}
+                    </td>
+
+                    <td>
+                        PDF
+                    </td>
+
+                    <td>
+
+                        <button
+                            class="btn btn-outline"
+                            onclick="viewOCR(${document.id})">
+
+                            View OCR
+
+                        </button>
+
+                    </td>
+
+                `;
+
+
+                documentRows.appendChild(row);
+
+            });
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+            documentRows.innerHTML =
+                `<tr>
+                    <td colspan="4" class="empty">
+                        ${escapeHTML(error.message)}
+                    </td>
+                </tr>`;
+
+        }
+
+    }
+
+
+
+    /* =========================================
+       UPLOAD DOCUMENT
+    ========================================= */
+
+    async function uploadDocument() {
+
+
+        uploadMessage.textContent = "";
+
+
+        /* Validate bidder */
+
+        if (!bidderSelect.value) {
+
+            showMessage(
+                "Please select a bidder.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        /* Validate file */
+
+        if (!fileInput.files.length) {
+
+            showMessage(
+                "Please select a PDF document.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        const file =
+            fileInput.files[0];
+
+
+        /* Validate PDF */
+
+        if (
+            file.type !== "application/pdf" &&
+            !file.name.toLowerCase().endsWith(".pdf")
+        ) {
+
+            showMessage(
+                "Only PDF files are allowed.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        /* Create FormData */
+
+        const formData =
+            new FormData();
+
+
+        formData.append(
+            "file",
+            file
+        );
+
+
+        formData.append(
+            "bidder_id",
+            bidderSelect.value
+        );
+
+
+        /* Disable button */
+
+        uploadButton.disabled = true;
+
+        uploadButton.textContent =
+            "Processing...";
+
+
+        showMessage(
+            "Uploading document and extracting text...",
+            "info"
+        );
+
+
+        try {
+
+            const response =
+                await fetch(
+                    API_BASE + "/api/documents/upload",
+                    {
+                        method: "POST",
+                        body: formData
+                    }
+                );
+
+
+            const result =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    result.detail ||
+                    result.message ||
+                    "Upload failed"
+                );
+
+            }
+
+
+            /* Success */
+
+            showMessage(
+                "Document uploaded and processed successfully.",
+                "success"
+            );
+
+
+            /* Clear file */
+
+            fileInput.value = "";
+
+
+            /* Refresh document list */
+
+            await loadDocuments();
+
+
+            /* Automatically show OCR */
+
+            if (result.document_id) {
+
+                await viewOCR(
+                    result.document_id
+                );
+
+            }
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+            showMessage(
+                error.message,
+                "error"
+            );
+
+        }
+
+        finally {
+
+            uploadButton.disabled = false;
+
+            uploadButton.textContent =
+                "Upload & Process";
+
+        }
+
+    }
+
+
+
+    /* =========================================
+       VIEW OCR
+    ========================================= */
+
+    async function viewOCR(documentId) {
+
+        ocrText.textContent =
+            "Extracting OCR text...";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    API_BASE +
+                    "/api/documents/" +
+                    documentId +
+                    "/text"
+                );
+
+
+            const result =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    result.detail ||
+                    result.message ||
+                    "Unable to extract OCR"
+                );
+
+            }
+
+
+            if (result.text && result.text.trim()) {
+
+                ocrText.textContent =
+                    result.text;
+
+            }
+
+            else {
+
+                ocrText.textContent =
+                    "No text could be extracted from this document.";
+
+            }
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+            ocrText.textContent =
+                "OCR Error: " +
+                error.message;
+
+        }
+
+    }
+
+
+
+    /* =========================================
+       MESSAGE
+    ========================================= */
+
+    function showMessage(text, type) {
+
+        uploadMessage.textContent =
+            text;
+
+
+        if (type === "success") {
+
+            uploadMessage.style.color =
+                "#16803c";
+
+        }
+
+        else if (type === "error") {
+
+            uploadMessage.style.color =
+                "#c62828";
+
+        }
+
+        else {
+
+            uploadMessage.style.color =
+                "#2457a6";
+
+        }
+
+    }
+
+
+
+    /* =========================================
+       HTML ESCAPE
+    ========================================= */
+
+    function escapeHTML(value) {
+
+        const div =
+            document.createElement("div");
+
+        div.textContent =
+            value;
+
+        return div.innerHTML;
+
+    }
+
+
+
+    /* =========================================
+       LOGOUT
+    ========================================= */
+
+    function logout() {
+
+        localStorage.removeItem("satyam_auth");
+
+        localStorage.removeItem("satyam_user");
+
+        window.location.href =
+            "01_login.html";
+
+    }
+
+</script>
+
+</body>
+</ht
